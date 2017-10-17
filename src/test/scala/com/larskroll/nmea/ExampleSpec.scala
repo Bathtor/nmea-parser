@@ -96,4 +96,19 @@ class ExampleSpec extends FlatSpec with Matchers {
     val lonsExpected = Seq((Degrees(7) + Arcminutes(34.221)), (Degrees(170) + Arcminutes(34.21)), (Degrees(7) + Arcminutes(34.1234)), (Degrees(7) + Arcminutes(34.1234)));
     res.map(_.toDegrees) should equal (lonsExpected.map(_.toDegrees));
   }
+
+  it should "handle time" in {
+    import java.time.LocalTime
+    import squants.time._
+
+    val times = Seq("032016.71", "000000.00");
+    val res = times.map(l => {
+      ValueParsers.utcTime.parse(l) match {
+        case Success(r, _) => r
+        case fe: Failure   => println(s"Error for $l at index ${fe.index}:\n${fe.extra.traced.trace}"); null
+      }
+    });
+    val timesExpected = Seq(LocalTime.of(3, 20, 16, Seconds(0.71).toNanoseconds.toInt), LocalTime.of(0, 0, 0, 0));
+    res should equal (timesExpected);
+  }
 }
