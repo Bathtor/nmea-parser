@@ -29,8 +29,28 @@ object ValueParsers {
 
   private val arcminFrac: P[Double] = P((digit.rep(exactly = 2) ~ "." ~ digit.rep).!).map(s => s.toDouble);
 
-  private val timeFormat = DateTimeFormatter.ofPattern("HHmmss.SS");
-  val utcTime: P[LocalTime] = P((digit.rep(exactly = 6) ~ "." ~ digit.rep(exactly = 2)).!).map(s => {
-    LocalTime.parse(s, timeFormat);
-  })
+  val utcTime = P(utcTime3dig | utcTime2dig | utcTime1dig | utcTime0dig);
+  
+  private val timeFormat0dig = DateTimeFormatter.ofPattern("HHmmss");
+  private val utcTime0dig: P[LocalTime] = P(digit.rep(exactly = 6).!).map {
+    case (s) => LocalTime.parse(s, timeFormat0dig)
+  };
+  
+  private val timeFormat1dig = DateTimeFormatter.ofPattern("HHmmss.S");
+  private val utcTime1dig: P[LocalTime] = P((digit.rep(exactly = 6) ~ "." ~ digit.rep(exactly = 1)).!).map {
+    case (s) => LocalTime.parse(s, timeFormat2dig)
+  };
+  
+  private val timeFormat2dig = DateTimeFormatter.ofPattern("HHmmss.SS");
+  private val utcTime2dig: P[LocalTime] = P((digit.rep(exactly = 6) ~ "." ~ digit.rep(exactly = 2)).!).map {
+    case (s) => LocalTime.parse(s, timeFormat2dig)
+  };
+  
+  private val timeFormat3dig = DateTimeFormatter.ofPattern("HHmmss.SSS");
+  private val utcTime3dig: P[LocalTime] = P((digit.rep(exactly = 6) ~ "." ~ digit.rep(exactly = 3)).!).map {
+    case (s) => LocalTime.parse(s, timeFormat3dig)
+  };
+  
+  
+  
 }
