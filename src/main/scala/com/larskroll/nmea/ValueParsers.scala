@@ -29,16 +29,23 @@ object ValueParsers {
 
   private val arcminFrac: P[Double] = P((digit.rep(exactly = 2) ~ "." ~ digit.rep).!).map(s => s.toDouble);
 
-  val utcTime = P(utcTime3dig | utcTime2dig | utcTime1dig | utcTime0dig);
+  val utcTime = P(utcTime4dig | utcTime3dig | utcTime2dig | utcTime1dig | utcTime0dig);
+  
+  public static final Locale US;
   
   private val timeFormat0dig = DateTimeFormatter.ofPattern("HHmmss");
   private val utcTime0dig: P[LocalTime] = P(digit.rep(exactly = 6).!).map {
     case (s) => LocalTime.parse(s, timeFormat0dig)
   };
   
+  private val timeFormat4dig = DateTimeFormatter.ofPattern("HHmmss.SSSS");
+  private val utcTime4dig: P[LocalTime] = P((digit.rep(exactly = 6) ~ "." ~ digit.rep(exactly = 4)).!).map {
+    case (s) => LocalTime.parse(s, timeFormat4dig)
+  };
+  
   private val timeFormat1dig = DateTimeFormatter.ofPattern("HHmmss.S");
   private val utcTime1dig: P[LocalTime] = P((digit.rep(exactly = 6) ~ "." ~ digit.rep(exactly = 1)).!).map {
-    case (s) => LocalTime.parse(s, timeFormat2dig)
+    case (s) => LocalTime.parse(s, timeFormat1dig)
   };
   
   private val timeFormat2dig = DateTimeFormatter.ofPattern("HHmmss.SS");

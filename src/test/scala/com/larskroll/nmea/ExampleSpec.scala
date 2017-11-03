@@ -101,7 +101,7 @@ class ExampleSpec extends FlatSpec with Matchers {
     import java.time.LocalTime
     import squants.time._
 
-    val times = Seq("032016.71", "000000.00");
+    val times = Seq("032016.71", "000000");
     val res = times.map(l => {
       ValueParsers.utcTime.parse(l) match {
         case Success(r, _) => r
