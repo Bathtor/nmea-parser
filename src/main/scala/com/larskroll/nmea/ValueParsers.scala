@@ -2,6 +2,7 @@ package com.larskroll.nmea
 
 import fastparse.all._
 import squants.space._
+import squants.time.Seconds
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -29,35 +30,19 @@ object ValueParsers {
 
   private val arcminFrac: P[Double] = P((digit.rep(exactly = 2) ~ "." ~ digit.rep).!).map(s => s.toDouble);
 
-  val utcTime = P(utcTime4dig | utcTime3dig | utcTime2dig | utcTime1dig | utcTime0dig);
-  
-  public static final Locale US;
-  
-  private val timeFormat0dig = DateTimeFormatter.ofPattern("HHmmss");
+  val utcTime = P(utcTimeNdig | utcTime0dig);
+
+  private val timeFormat = DateTimeFormatter.ofPattern("HHmmss");
   private val utcTime0dig: P[LocalTime] = P(digit.rep(exactly = 6).!).map {
-    case (s) => LocalTime.parse(s, timeFormat0dig)
+    case (s) => LocalTime.parse(s, timeFormat)
   };
-  
-  private val timeFormat4dig = DateTimeFormatter.ofPattern("HHmmss.SSSS");
-  private val utcTime4dig: P[LocalTime] = P((digit.rep(exactly = 6) ~ "." ~ digit.rep(exactly = 4)).!).map {
-    case (s) => LocalTime.parse(s, timeFormat4dig)
+
+  private val utcTimeNdig: P[LocalTime] = P(digit.rep(exactly = 6).! ~ "." ~/ digit.rep.!).map {
+    case (hms, s) => {
+      val hmsLT = LocalTime.parse(hms, timeFormat);
+      val seconds = Seconds(s"0.$s".toDouble);
+      hmsLT.plusNanos(seconds.toNanoseconds.toLong)
+    }
   };
-  
-  private val timeFormat1dig = DateTimeFormatter.ofPattern("HHmmss.S");
-  private val utcTime1dig: P[LocalTime] = P((digit.rep(exactly = 6) ~ "." ~ digit.rep(exactly = 1)).!).map {
-    case (s) => LocalTime.parse(s, timeFormat1dig)
-  };
-  
-  private val timeFormat2dig = DateTimeFormatter.ofPattern("HHmmss.SS");
-  private val utcTime2dig: P[LocalTime] = P((digit.rep(exactly = 6) ~ "." ~ digit.rep(exactly = 2)).!).map {
-    case (s) => LocalTime.parse(s, timeFormat2dig)
-  };
-  
-  private val timeFormat3dig = DateTimeFormatter.ofPattern("HHmmss.SSS");
-  private val utcTime3dig: P[LocalTime] = P((digit.rep(exactly = 6) ~ "." ~ digit.rep(exactly = 3)).!).map {
-    case (s) => LocalTime.parse(s, timeFormat3dig)
-  };
-  
-  
-  
+
 }

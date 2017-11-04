@@ -101,14 +101,26 @@ class ExampleSpec extends FlatSpec with Matchers {
     import java.time.LocalTime
     import squants.time._
 
-    val times = Seq("032016.71", "000000");
+    val times = Seq(
+      "032016.7123",
+      "032016.712",
+      "032016.71",
+      "032016.7",
+      "032016",
+      "000000");
+    val timesExpected = Seq(
+      LocalTime.of(3, 20, 16, Seconds(0.7123).toNanoseconds.toInt),
+      LocalTime.of(3, 20, 16, Seconds(0.712).toNanoseconds.toInt),
+      LocalTime.of(3, 20, 16, Seconds(0.71).toNanoseconds.toInt),
+      LocalTime.of(3, 20, 16, Seconds(0.7).toNanoseconds.toInt),
+      LocalTime.of(3, 20, 16, 0),
+      LocalTime.of(0, 0, 0, 0));
     val res = times.map(l => {
       ValueParsers.utcTime.parse(l) match {
         case Success(r, _) => r
         case fe: Failure   => println(s"Error for $l at index ${fe.index}:\n${fe.extra.traced.trace}"); null
       }
     });
-    val timesExpected = Seq(LocalTime.of(3, 20, 16, Seconds(0.71).toNanoseconds.toInt), LocalTime.of(0, 0, 0, 0));
     res should equal (timesExpected);
   }
 }
